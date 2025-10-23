@@ -5,8 +5,8 @@ export const createWorkspaceService = async (user, data) => {
   const workspace = new Workspace({
     ...data,
     title: data.title,
-    admin: data.admin,
-    members: [data.admin],
+    admin: data.admin || user.id,
+    members: [data.admin] || user.id,
   });
   await workspace.save();
   return workspace;
