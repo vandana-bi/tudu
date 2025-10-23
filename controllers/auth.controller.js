@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import {
   loginUser,
   createUser,
+  getMeService,
   generateToken,
   generateRefreshToken,
   resetPasswordService,
@@ -47,10 +48,8 @@ export const signup = async (req, res) => {
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
-    console.error(err);
-    res
-      .status(500)
-      .json({ message: "User Signup Failed!", error: err.message });
+    console.log(err);
+    res.status(500).json({ message: "User Signup Failed!", error: err });
   }
 };
 
@@ -65,8 +64,10 @@ export const login = async (req, res) => {
       user,
       token,
       refreshToken,
+      cookie,
     });
   } catch (err) {
+    console.log(err);
     res
       .status(500)
       .json({ message: "User Login Failed!!", error: err.message });
@@ -113,6 +114,8 @@ export const getMe = async (req, res) => {
     res.json({ user });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res
+      .status(500)
+      .json({ message: "Error in getting current logged in User!" });
   }
 };

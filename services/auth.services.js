@@ -7,14 +7,15 @@ import { sendMail } from "../utils/mailer.js";
 
 dotenv.config();
 
-export const createUser = (data) => {
+export const createUser = async (data) => {
   const { name, email, password } = data;
   if (!name || !email || !password) {
     throw new Error("Enter all fields!");
   }
-  const existingUser = User.findOne({ email });
+  const existingUser = await User.findOne({ email: email });
+
   if (existingUser) throw new Error("User already exists!");
-  const hashedPassword = bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
   const user = User.create({
     name,
     email,
@@ -24,14 +25,16 @@ export const createUser = (data) => {
   return user;
 };
 
-export const loginUser = (data) => {
-  const { email, password } = req.body;
+export const loginUser = async (data) => {
+  const { email, password } = data;
   if (!email || !password) {
     throw new Error("Missing some field, enter all fields!");
   }
-  const user = User.findOne({ email });
+  const user = await User.findOne({ email });
   if (!user) throw new Error("No user exists with the email!");
   const isMatch = bcrypt.compare(password, user.password);
+  console.log("Password from FE:", password);
+  console.log("Password from DB:", user?.password);
   if (!isMatch) throw new Error("Invalid credentials!");
   return user;
 };
@@ -88,6 +91,7 @@ export const getMeService = (userId) => {
   if (!user) {
     throw new Error("User not Found!!");
   }
+  return user;
 };
 
 export const generateToken = (user) => {
